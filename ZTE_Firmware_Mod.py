@@ -42,10 +42,13 @@ def accept_warning():
         user_input = input("To proceed please enter 'y', otherwise 'n' to exit: ")
         if user_input.lower() in ['y', 'yes']:
             print("\r\n")
-            mm = get_mm(file_name)
-            check_file(mm)
-            patch_zImage(mm, fw_version, output_file)
-            print_install()
+            check_file_exists(file_name)
+            
+            with open(file_name, 'r+b') as f:
+                with mmap.mmap(f.fileno(), 0) as mm:
+                    check_file(mm)
+                    patch_zImage(mm, fw_version, output_file)
+                    print_install()
             break
         elif user_input.lower() in ['n', 'no']:
             print("Ok, bye! :)")
@@ -83,24 +86,19 @@ def print_install():
     print("---------------------------------------")
     print("Good luck!")
 
-def get_mm(file_name):
+def check_file_exists(file_name):
     if not os.path.isfile(file_name):
         print(f"ERROR: Memory Dump {file_name} does not exist!")
         sys.exit(1)
     if os.path.isfile(output_file):
         print(f"WARNING: {output_file} already exist, it will be deleted!")
         os.remove(output_file)
-    with open(file_name, 'r+b') as f:
-        # Map file in memory
-        mm = mmap.mmap(f.fileno(), 0)
-    return mm
 
 # Check if the dump is a correct ZTE file and match HWVer
 def check_file(mm):
     # Check ZTE Magic Header
     if mm[4:12] != b"DDDDUUUU":
         print(f"ERROR: {file_name} doesn't seem a valid F601v6 dump")
-        mm.close()
         sys.exit(1)
         return False
 
@@ -108,7 +106,6 @@ def check_file(mm):
     hwver = mm[144:145].decode("utf-8").strip('\x00')
     if hwver != '6':
         print("Wrong HW version, only V6 is supported!")
-        mm.close()
         sys.exit(1)
         return False
 
@@ -221,8 +218,6 @@ def patch_zImage(mm, fw_version, output_file):
     with open(output_file, 'wb') as f:
         f.write(zte_header)
         f.write(new_zImage)
-        f.close()
-        mm.close()
     elapsed_time = time.time() - last_time
     print(f"------: Done in {round(elapsed_time, 3)} secs")
 
