@@ -13,6 +13,15 @@ import time
 import argparse
 import io
 
+logo = """
+ _   _               _       ____  ____    ___   _   _ 
+| | | |  __ _   ___ | | __  / ___||  _ \  / _ \ | \ | |
+| |_| | / _` | / __|| |/ / | |  _ | |_) || | | ||  \| |
+|  _  || (_| || (__ |   <  | |_| ||  __/ | |_| || |\  |
+|_| |_| \__,_| \___||_|\_\  \____||_|     \___/ |_| \_|
+"""
+print(logo)
+
 # Check arguments
 parser = argparse.ArgumentParser(description='ZTE Firmware Mod Tool - ONLY for F601v6')
 
@@ -35,7 +44,7 @@ def accept_warning():
         f"This script is currently working only for ZTE F601v6 shipped with TIM (V6.0.10N40) or OpenFiber (V6.0.10P6N7) firmware\r\n"
         f"All other versions were not tested, USE IT AT YOUR OWN RISK!\r\n"
         f"Before proceed make sure to have a GOOD BACKUP of all your ONT partitions.\r\n"
-        f"Please refer to Hack-GPON Wiki for how-to: https://hack-gpon.github.io/ont-zte-f601/\r")
+        f"Please refer to Hack-GPON Wiki for how-to: https://hack-gpon.org/ont-zte-f601/\r")
     print("---------------------------------------")
     count = 0
     while True:
